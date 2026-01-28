@@ -29,7 +29,7 @@
                         <br>Baris pertama adalah Header dan akan diabaikan.
                     </small>
                     <div class="mt-2">
-                        <a href="{{ route('jadwal.template') }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-download me-1"></i> Download Template Excek</a>
+                        <a href="{{ route('jadwal.template') }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-download me-1"></i> Download Template Excel</a>
                     </div>
                 </div>
 

@@ -55,7 +55,7 @@
                             <th class="py-3">Nama Pegawai</th>
                             <th class="py-3">Nama Shift</th>
                             <th class="py-3">Jam Kerja</th>
-                            <th class="py-3">Status Aktif</th>
+                            <th class="py-3">Status</th>
                             <th class="py-3">Status Kehadiran</th>
                             <th class="text-end pe-4 py-3">Aksi</th>
                         </tr>
@@ -83,7 +83,7 @@
                                                 onchange="document.getElementById('form-active-{{ $j['ID'] ?? $j['id'] }}').submit()"
                                                 {{ ($j['is_active'] ?? true) ? 'checked' : '' }}>
                                             <label class="form-check-label small" for="flexSwitchCheckDefault">
-                                                {{ ($j['is_active'] ?? true) ? 'Aktif' : 'Nonaktif' }}
+                                                {{ ($j['is_active'] ?? true) ? 'Hari Kerja' : 'Hari Libur' }}
                                             </label>
                                         </div>
                                     </form>

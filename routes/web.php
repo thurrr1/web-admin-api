@@ -10,6 +10,7 @@ use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\OrganisasiController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ReportController;
 use App\Http\Middleware\CheckApiToken;
 
 Route::get('/', function () {
@@ -19,6 +20,56 @@ Route::get('/', function () {
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Route khusus untuk serve YAML dengan dynamic URL dari .env
+Route::get('/docs-dynamic/{filename}', function ($filename) {
+    $path = public_path("docs/{$filename}");
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    
+    $content = file_get_contents($path);
+    $apiBaseUrl = env('API_BASE_URL', 'http://localhost:3000/api');
+    
+    // Hapus "/api" jika ada di akhir URL .env karena di swagger biasanya root url
+    // Tapi cek dulu definisi di YAML. 
+    // Di YAML: "url: http://localhost:3000" (tanpa /api)
+    // Di .env: "http://localhost:3000/api"
+    
+    // Kita ambil base root-nya saja (tanpa /api) untuk server URL di swagger
+    // Asumsi: API_BASE_URL selalu berakhiran /api, kita hapus itu.
+    $serverUrl = rtrim($apiBaseUrl, '/');
+    if (str_ends_with($serverUrl, '/api')) {
+        $serverUrl = substr($serverUrl, 0, -4);
+    }
+
+    // Replace URL static dengan URL dari env
+    $content = str_replace(
+        'url: http://localhost:3000', 
+        'url: ' . $serverUrl, 
+        $content
+    );
+    
+    return response($content)->header('Content-Type', 'text/yaml');
+})->name('docs.dynamic');
+
+Route::get('/api-docs', function () {
+    return view('swagger', [
+        'title' => 'Admin API Documentation',
+        'url' => route('docs.dynamic', ['filename' => 'openapi.yaml']),
+        'otherDocsUrl' => '/api-docs/mobile',
+        'otherDocsLabel' => 'Switch to Mobile API'
+    ]);
+});
+
+Route::get('/api-docs/mobile', function () {
+    return view('swagger', [
+        'title' => 'Mobile App API Documentation',
+        'url' => route('docs.dynamic', ['filename' => 'openapi_mobile.yaml']),
+        'otherDocsUrl' => '/api-docs',
+        'otherDocsLabel' => 'Switch to Admin API'
+    ]);
+});
 
 // Group Route yang butuh Login
 Route::middleware([CheckApiToken::class])->group(function () {
@@ -65,4 +116,8 @@ Route::middleware([CheckApiToken::class])->group(function () {
 
     // Manajemen Role & Permission
     Route::resource('role', RoleController::class);
+
+    // Laporan PDF
+    Route::get('/reports/monthly', [ReportController::class, 'monthlyRecap'])->name('reports.monthly');
+    Route::get('/reports/daily', [ReportController::class, 'dailyRecap'])->name('reports.daily');
 });

@@ -87,6 +87,8 @@ class AsnController extends Controller
 
     public function import(Request $request)
     {
+        set_time_limit(300); // Perpanjang max execution time php (5 menit)
+
         $request->validate([
             'file_excel' => 'required|mimes:xlsx,xls,csv',
         ]);
@@ -128,7 +130,8 @@ class AsnController extends Controller
             }
 
             // Kirim JSON Array ke Go Fiber
-            $response = $this->api->post('/admin/asn/import', $payload);
+            // Kirim JSON Array ke Go Fiber (Timeout 300 detik)
+            $response = $this->api->post('/admin/asn/import', $payload, 300);
 
             if ($response->successful()) {
                 return redirect()->route('asn.index')->with('success', $response->json('message'));

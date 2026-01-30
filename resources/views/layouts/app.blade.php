@@ -17,8 +17,8 @@
         
         /* Sidebar Minimalis */
         .sidebar {
-            min-width: 260px;
-            max-width: 260px;
+            min-width: 200px;
+            max-width: 200px;
             background: #ffffff;
             min-height: 100vh;
             box-shadow: 2px 0 15px rgba(0,0,0,0.03); /* Shadow halus di kanan */
@@ -82,7 +82,7 @@
         }
         .content {
             flex: 1;
-            padding: 30px;
+            padding: 15px 30px 10px 30px;
         }
 
         /* Global Card Styling (Otomatis mengubah semua card di aplikasi) */
@@ -118,7 +118,7 @@
         <!-- Sidebar Kiri -->
         <div class="sidebar">
             <div class="brand">
-                <i class="bi bi-fingerprint me-2"></i> E-Absensi 
+                <i class="bi bi-fingerprint me-2"></i> Absensi Online 
             </div>
             
             <div class="py-2">

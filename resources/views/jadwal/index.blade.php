@@ -6,6 +6,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="text-dark fw-bold m-0"><i class="bi bi-calendar-week me-2"></i> Jadwal Kerja Pegawai</h4>
         <div>
+            <a href="{{ route('reports.daily', ['tanggal' => $tanggal]) }}" class="btn btn-outline-danger shadow-sm me-2">
+                <i class="bi bi-file-earmark-pdf me-1"></i> Rekap Harian
+            </a>
             <a href="{{ route('jadwal.import.view') }}" class="btn btn-outline-success shadow-sm me-2">
                 <i class="bi bi-file-earmark-excel me-1"></i> Import Excel
             </a>
@@ -100,6 +103,7 @@
                                             $badgeClass = 'bg-warning text-dark';
                                         } elseif ($status == 'ALPHA') {
                                             $badgeClass = 'bg-danger';
+                                            $status = 'Tanpa Keterangan';
                                         }
                                     @endphp
                                     <span class="badge {{ $badgeClass }}">{{ $status }}</span>

@@ -14,7 +14,8 @@ class ApiService
     public function __construct()
     {
         // URL Backend Go Fiber (Pastikan port sesuai)
-        $this->baseUrl = 'http://localhost:3000/api';
+        // $this->baseUrl = 'http://localhost:3000/api';
+        $this->baseUrl = env('API_BASE_URL', 'http://localhost:3000/api');
     }
 
     public function get($endpoint, $params = [], $timeout = 60)

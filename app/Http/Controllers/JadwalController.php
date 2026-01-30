@@ -134,8 +134,8 @@ class JadwalController extends Controller
 
     public function import(Request $request)
     {
-        // Set timeout PHP script (misal 5 menit)
-        set_time_limit(300);
+        // Set timeout PHP script (misal 10 menit)
+        set_time_limit(600);
 
         $request->validate([
             'file_excel' => 'required|mimes:xlsx,xls,csv'
@@ -161,6 +161,21 @@ class JadwalController extends Controller
                 $valDate = $row[2];
                 if (is_numeric($valDate)) {
                     $valDate = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($valDate)->format('Y-m-d');
+                } else {
+                    // Coba parse format dd/mm/yyyy atau dd-mm-yyyy
+                    try {
+                        // Bersihkan spasi jika ada
+                        $valDate = trim($valDate);
+                        $formatted = \Carbon\Carbon::createFromFormat('d/m/Y', $valDate);
+                        if (!$formatted) {
+                             $formatted = \Carbon\Carbon::createFromFormat('d-m-Y', $valDate);
+                        }
+                        $valDate = $formatted->format('Y-m-d');
+                    } catch (\Exception $e) {
+                        // Fallback atau biarkan apa adanya jika gagal parse, nanti mungkin error di API Go
+                        // Atau set null agar skip?
+                        // Kita biarkan string aslinya, siapa tau formatnya Y-m-d
+                    }
                 }
                 
                 $jamMasuk = $row[3];
@@ -186,8 +201,8 @@ class JadwalController extends Controller
                 ];
             }
 
-            // Kirim ke Go Backend dengan timeout 300 detik
-            $response = $this->api->post('/admin/jadwal/import', $payload, 300);
+            // Kirim ke Go Backend dengan timeout 600 detik
+            $response = $this->api->post('/admin/jadwal/import', $payload, 600);
 
             if ($response->successful()) {
                  return back()->with('success', $response->json('message') ?? 'Import berhasil');

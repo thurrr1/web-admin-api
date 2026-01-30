@@ -3,17 +3,17 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-dark fw-bold m-0">Dashboard</h2>
-        <div class="text-muted">
-            <i class="bi bi-calendar3 me-2"></i> {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
-        </div>
-    </div>
 
     <div class="row">
         <!-- Left Column: Statistik Harian (Vertical) -->
+
         <div class="col-lg-3 mb-4">
+            <h2 class="text-dark fw-bold mb-4">Dashboard</h2>
+            <div class="text-muted mb-4">
+                <i class="bi bi-calendar3 me-2"></i> {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
+            </div>
             <h6 class="mb-3 text-secondary fw-bold text-uppercase small ls-1">Statistik Hari Ini</h6>
+            
 
             <!-- Card Hadir Tepat Waktu -->
             <div class="card border-0 shadow-sm border-start border-4 border-success mb-3">
@@ -67,7 +67,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs fw-bold text-secondary text-uppercase mb-1">Belum Absen / Alfa</div>
+                            <div class="text-xs fw-bold text-secondary text-uppercase mb-1">Belum Absen / Tanpa Keterangan</div>
                             @php $belumAlfa = ($stats['hari_ini']['belum_absen'] ?? 0) + ($stats['hari_ini']['alfa'] ?? 0); @endphp
                             <div class="h4 mb-0 fw-bold text-dark">{{ $belumAlfa }}</div>
                         </div>
@@ -114,7 +114,7 @@
             <!-- Row: Statistik Bulanan (Grafik) -->
             <div class="row">
                 <!-- Left Column (Inside Right): Bar Chart Harian -->
-                <div class="col-md-8 mb-4">
+                <div class="col-md-9 mb-4">
                     <div class="card shadow-sm border-0 h-100">
                         <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
                             <h6 class="m-0 fw-bold text-primary">Statistik Harian ({{ $stats['meta']['bulan'] ?? '' }} {{ $stats['meta']['tahun'] ?? '' }})</h6>
@@ -143,15 +143,18 @@
         @endphp
 
                 <!-- Right Column (Inside Right): Doughnut Chart + Persentase -->
-                <div class="col-md-4 mb-4">
+                <div class="col-md-3 mb-4">
                     <div class="card shadow-sm border-0 h-100">
-                        <div class="card-header bg-white py-3">
-                            <h6 class="m-0 fw-bold text-primary">Ringkasan Bulan Ini</h6>
+                        <div class="card-header bg-white py-3  d-flex flex-row align-items-center justify-content-center">
+                            <!-- <h6 class="m-0 fw-bold text-primary">Rekapitulasi Kehadiran Bulanan</h6> -->
+                            <a href="{{ route('reports.monthly', ['bulan' => request('bulan', date('n')), 'tahun' => request('tahun', date('Y'))]) }}" class="btn btn-sm btn-danger  shadow-sm">
+                                <i class="bi bi-file-earmark-pdf  me-1"></i> Download Rekap PDF
+                            </a>
                         </div>
                         <div class="card-body">
                             <!-- Chart Doughnut & Total Side-by-Side -->
                             <div class="d-flex align-items-center justify-content-center mb-4">
-                                <div style="position: relative; height: 140px; width: 140px;">
+                                <div style="position: relative; height: 80px; width: 80px;">
                                     <canvas id="monthlyChart"></canvas>
                                 </div>
                                 <div class="ms-4 text-center">
@@ -204,7 +207,7 @@
                                 </div>
 
                                 <div class="d-flex justify-content-between mb-1">
-                                    <span class="small fw-bold text-danger"><i class="bi bi-circle-fill me-1"></i> Alfa</span>
+                                    <span class="small fw-bold text-danger"><i class="bi bi-circle-fill me-1"></i> Tanpa Keterangan</span>
                                     <span class="small fw-bold">{{ hitungPersen($alfa, $total) }}%</span>
                                 </div>
                                 <div class="progress mb-3" style="height: 6px;">
@@ -287,7 +290,7 @@
                             display: false // Hide legend as requested
                         }
                     },
-                    cutout: '75%', // Membuat efek Donut lebih tipis
+                    cutout: '70%', // Membuat efek Donut lebih tipis
                 }
             });
 
@@ -306,20 +309,21 @@
                 
                 // 1. Inisialisasi data kosong (0) untuk setiap tanggal
                 for ($i = 1; $i <= $daysInMonth; $i++) {
-                    $dailyData[$i] = ['hadir' => 0, 'tl_cp' => 0, 'izin' => 0, 'cuti' => 0, 'alfa' => 0, 'belum' => 0];
+                    $dailyData[$i] = ['hadir' => 0, 'tl_cp' => 0, 'tl_cp_izin' => 0, 'izin' => 0, 'cuti' => 0, 'alfa' => 0, 'belum' => 0];
                 }
 
                 // 2. Isi data berdasarkan detail kehadiran dari API
                 $details = $stats['bulan_ini']['detail'] ?? [];
                 
                 foreach ($details as $d) {
-                    // Konversi ke array dan lowercase keys agar aman (mengatasi beda casing JSON Go vs PHP)
+                    // Konversi ke array dan lowercase keys agar aman
                     $d = array_change_key_case((array)$d, CASE_LOWER);
 
                     $tgl = $d['tanggal'] ?? null;
-                    // Handle variasi key: 'status_masuk' (snake_case) atau 'statusmasuk' (dari StatusMasuk)
                     $statusMasuk = $d['status_masuk'] ?? $d['statusmasuk'] ?? '';
                     $statusPulang = $d['status_pulang'] ?? $d['statuspulang'] ?? '';
+                    // Asumsi field permission id ada di detail api, misal 'perizinan_kehadiran_id' atau 'perizinankehadiranid'
+                    $izinKoreksiId = $d['perizinan_kehadiran_id'] ?? $d['perizinankehadiranid'] ?? null;
 
                     if ($tgl) {
                         $dayIndex = (int) date('j', strtotime($tgl));
@@ -330,8 +334,13 @@
                             } elseif ($statusMasuk == 'CUTI') {
                                 $dailyData[$dayIndex]['cuti']++;
                             } elseif ($statusMasuk == 'TERLAMBAT' || $statusPulang == 'PULANG_CEPAT') {
-                                // Jika terlambat masuk ATAU pulang cepat, masuk kategori kuning
-                                $dailyData[$dayIndex]['tl_cp']++;
+                                if ($izinKoreksiId) {
+                                     // TL/CP Dengan Izin -> Orange
+                                     $dailyData[$dayIndex]['tl_cp_izin']++; 
+                                } else {
+                                     // TL/CP Tanpa Izin -> Kuning
+                                     $dailyData[$dayIndex]['tl_cp']++;
+                                }
                             } elseif ($statusMasuk == 'HADIR') {
                                 $dailyData[$dayIndex]['hadir']++;
                             } elseif ($statusMasuk == 'ALFA') {
@@ -346,8 +355,6 @@
                 function getDailySeries($data, $days, $key) {
                     $series = [];
                     foreach ($days as $d) {
-                        // Format tanggal key misal "2023-10-01" atau index integer
-                        // Disini kita asumsi akses array sederhana, sesuaikan dengan response API nanti
                         $series[] = $data[$d][$key] ?? 0; 
                     }
                     return json_encode($series);
@@ -355,6 +362,9 @@
             @endphp
 
             const dailyLabels = {!! json_encode($labels) !!};
+
+            console.log("Details Raw:", @json($details));
+            console.log("Daily Data Processed:", @json($dailyData));
 
             new Chart(ctxDaily, {
                 type: 'bar',
@@ -372,6 +382,11 @@
                             backgroundColor: '#ffc107',
                         },
                         {
+                            label: 'TL / CP (Diizinkan)',
+                            data: {!! getDailySeries($dailyData, $labels, 'tl_cp_izin') !!},
+                            backgroundColor: '#fd7e14', // Orange
+                        },
+                        {
                             label: 'Izin',
                             data: {!! getDailySeries($dailyData, $labels, 'izin') !!},
                             backgroundColor: '#0dcaf0',
@@ -379,7 +394,7 @@
                         {
                             label: 'Cuti',
                             data: {!! getDailySeries($dailyData, $labels, 'cuti') !!},
-                            backgroundColor: '#6f42c1',
+                            backgroundColor: '#6f42c1', // Purple
                         },
                         {
                             label: 'Alfa',
@@ -389,7 +404,7 @@
                         {
                             label: 'Belum Absen',
                             data: {!! getDailySeries($dailyData, $labels, 'belum') !!},
-                            backgroundColor: '#cccecf', // Disamakan dengan Donut
+                            backgroundColor: '#cccecf', 
                         }
                     ]
                 },

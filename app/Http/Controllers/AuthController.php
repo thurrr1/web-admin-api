@@ -28,15 +28,12 @@ class AuthController extends Controller
         ]);
 
         // 1. Kirim Request Login ke API Go
-        // Kita kirim device_id dummy karena ini Web Admin
+        // Gunakan endpoint khusus Web Login (Bypass Device Verification)
         $response = null;
         try {
-            $response = $this->api->post('/login', [
+            $response = $this->api->post('/web-login', [
                 'nip' => $request->nip,
                 'password' => $request->password,
-                'device_id' => 'web-admin-panel', 
-                'brand' => 'Web Browser',
-                'series' => 'Admin Panel'
             ]);
         } catch (\Exception $e) {
             return back()->withErrors(['nip' => 'Gagal terhubung ke Server API. Pastikan Go Fiber berjalan di port 3000.']);

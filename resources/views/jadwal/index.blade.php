@@ -56,7 +56,7 @@
                         <tr>
                             <th class="ps-4 py-3">No</th>
                             <th class="py-3">Nama Pegawai</th>
-                            <th class="py-3">Nama Shift</th>
+                            <th class="py-3">Nama Jam Kerja</th>
                             <th class="py-3">Jam Kerja</th>
                             <th class="py-3">Status</th>
                             <th class="py-3">Status Kehadiran</th>
@@ -109,9 +109,19 @@
                                     <span class="badge {{ $badgeClass }}">{{ $status }}</span>
                                     @if(!empty($j['jam_masuk_real']))
                                         <div class="small text-muted mt-1" style="font-size: 0.75rem;">
-                                            In: {{ \Carbon\Carbon::parse($j['jam_masuk_real'])->format('H:i') }}
+                                            <div>
+                                                In: {{ \Carbon\Carbon::parse($j['jam_masuk_real'])->format('H:i') }}
+                                                @if(($j['status_lokasi_masuk'] ?? '') == 'INVALID')
+                                                    <span class="text-warning fw-bold" style="font-size: 0.75rem;">(Luar Kantor)</span>
+                                                @endif
+                                            </div>
                                             @if(!empty($j['jam_pulang_real']))
-                                                | Out: {{ \Carbon\Carbon::parse($j['jam_pulang_real'])->format('H:i') }}
+                                                <div>
+                                                    Out: {{ \Carbon\Carbon::parse($j['jam_pulang_real'])->format('H:i') }}
+                                                    @if(($j['status_lokasi_pulang'] ?? '') == 'INVALID')
+                                                        <span class="text-warning fw-bold" style="font-size: 0.75rem;">(Luar Kantor)</span>
+                                                    @endif
+                                                </div>
                                             @endif
                                         </div>
                                     @endif

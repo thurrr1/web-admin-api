@@ -18,6 +18,46 @@ security:
   - BearerAuth: []
 
 paths:
+  # --- AUTH ---
+  /api/web-login:
+    post:
+      summary: Login Web Admin (No Device Check)
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nip:
+                  type: string
+                  example: "123456789"
+                password:
+                  type: string
+                  example: "admin123"
+      responses:
+        200:
+          description: Login Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  token:
+                    type: string
+                  refresh_token:
+                    type: string
+                  data:
+                    type: object
+        400:
+          description: Format Data Salah
+        401:
+          description: Login Gagal
+
   # --- DASHBOARD ---
   /api/admin/dashboard:
     get:

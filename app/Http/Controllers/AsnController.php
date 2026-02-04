@@ -115,7 +115,10 @@ class AsnController extends Controller
                 // Generate Password: 4 Angka pertama NIP + Kata pertama Nama
                 // Contoh: NIP 1990... Nama Budi Santoso -> Pass: 1990Budi
                 $firstWordName = explode(' ', $nama)[0];
-                $generatedPassword = substr($nip, 0, 4) . $firstWordName;
+                $cleanFirstWord = preg_replace('/[^a-zA-Z]/', '', $firstWordName);
+                $finalFirstWord = ucfirst(strtolower($cleanFirstWord));
+
+                $generatedPassword = substr($nip, 0, 4) . $finalFirstWord;
 
                 $payload[] = [
                     'nama'     => $nama,

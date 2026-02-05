@@ -1,0 +1,218 @@
+/* Global Body & Fonts */
+html {
+    font-size: 14px;
+    /* Force base size to 14px for consistent "rem" calculation */
+}
+
+body {
+    background-color: #f8f9fc;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Prefer Inter if available */
+    color: #444;
+    line-height: 1.5;
+}
+
+/* Utilities */
+.text-xs {
+    font-size: 0.75rem;
+    /* ~10.5px */
+}
+
+.text-sm {
+    font-size: 0.875rem;
+    /* ~12.25px */
+}
+
+.ls-1 {
+    letter-spacing: 0.5px;
+}
+
+/* Typography Headers */
+h1,
+.h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+h2,
+.h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+h3,
+.h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+h4,
+.h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+h5,
+.h5 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+h6,
+.h6 {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* Wrapper */
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    min-width: 230px;
+    /* Reduced from 250px */
+    max-width: 230px;
+    background: #ffffff;
+    min-height: 100vh;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.03);
+    z-index: 1040;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+}
+
+.sidebar .brand {
+    padding: 20px 25px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #4e73df;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar a {
+    color: #6c757d;
+    text-decoration: none;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s ease-in-out;
+    margin: 4px 15px;
+    border-radius: 8px;
+}
+
+.sidebar a i {
+    margin-right: 10px;
+    font-size: 1rem;
+}
+
+.sidebar a:hover {
+    background: #f8f9fa;
+    color: #4e73df;
+}
+
+.sidebar a.active {
+    background: #eef2ff;
+    color: #4e73df;
+    font-weight: 600;
+}
+
+.sidebar .menu-header {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #adb5bd;
+    margin: 20px 25px 8px;
+    font-weight: 700;
+}
+
+/* Content Area */
+.content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    transition: margin-left 0.3s;
+}
+
+.content {
+    flex: 1;
+    padding: 20px 30px;
+}
+
+/* Navbar */
+.navbar {
+    background: #ffffff;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
+    padding: 12px 30px;
+    border: none;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    background: #ffffff;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background: transparent;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 15px 20px;
+    font-weight: 600;
+    color: #4e73df;
+    font-size: 1rem;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 0.9rem;
+    box-shadow: none !important;
+}
+
+/* RESPONSIVE MEDIA QUERIES */
+@media (max-width: 768px) {
+    .sidebar {
+        margin-left: -230px;
+        /* Matches new width */
+        position: fixed;
+        height: 100%;
+    }
+
+    .sidebar.show {
+        margin-left: 0;
+    }
+
+    .content-wrapper {
+        margin-left: 0;
+    }
+
+    .overlay {
+        display: none;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1030;
+        top: 0;
+        left: 0;
+    }
+
+    .overlay.show {
+        display: block;
+    }
+}

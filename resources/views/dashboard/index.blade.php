@@ -24,7 +24,7 @@
                             <div class="h4 mb-0 fw-bold text-dark">{{ $stats['hari_ini']['hadir_tepat_waktu'] ?? 0 }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="bi bi-check-circle-fill text-gray-300" style="font-size: 2rem; color: #d1e7dd;"></i>
+                            <i class="bi bi-check-circle-fill text-gray-300 display-4" style="color: #d1e7dd;"></i>
                         </div>
                     </div>
                 </div>
@@ -40,7 +40,7 @@
                             <small class="text-muted" style="font-size: 0.7rem;">Terlambat / Cepat Pulang</small>
                         </div>
                         <div class="col-auto">
-                            <i class="bi bi-exclamation-triangle-fill text-gray-300" style="font-size: 2rem; color: #fff3cd;"></i>
+                            <i class="bi bi-exclamation-triangle-fill text-gray-300 display-4" style="color: #fff3cd;"></i>
                         </div>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
                             <div class="h4 mb-0 fw-bold text-dark">{{ $izinCuti }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="bi bi-file-earmark-text-fill text-gray-300" style="font-size: 2rem; color: #cff4fc;"></i>
+                            <i class="bi bi-file-earmark-text-fill text-gray-300 display-4" style="color: #cff4fc;"></i>
                         </div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                             <div class="h4 mb-0 fw-bold text-dark">{{ $belumAlfa }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="bi bi-person-dash-fill text-gray-300" style="font-size: 2rem; color: #e2e3e5;"></i>
+                            <i class="bi bi-person-dash-fill text-gray-300 display-4" style="color: #e2e3e5;"></i>
                         </div>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
         <!-- Right Column: Statistik Bulanan & Filter -->
         <div class="col-lg-9">
             <!-- Filter Bulan & Tahun -->
-            <div class="card shadow-sm border-0 mb-4">
+            <div class="card shadow-sm border-0 mb-2">
                 <div class="card-body py-3">
                     <form action="{{ url()->current() }}" method="GET" class="row g-2 align-items-center">
                         <div class="col-auto fw-bold text-secondary">Filter Rekap:</div>
@@ -114,7 +114,7 @@
             <!-- Row: Statistik Bulanan (Grafik) -->
             <div class="row">
                 <!-- Left Column (Inside Right): Bar Chart Harian -->
-                <div class="col-md-9 mb-4">
+                <div class="col-md-9 mb-1">
                     <div class="card shadow-sm border-0 h-100">
                         <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
                             <h6 class="m-0 fw-bold text-primary">Statistik Harian ({{ $stats['meta']['bulan'] ?? '' }} {{ $stats['meta']['tahun'] ?? '' }})</h6>
@@ -143,12 +143,12 @@
         @endphp
 
                 <!-- Right Column (Inside Right): Doughnut Chart + Persentase -->
-                <div class="col-md-3 mb-4">
+                <div class="col-md-3 mb-2">
                     <div class="card shadow-sm border-0 h-100">
-                        <div class="card-header bg-white py-3  d-flex flex-row align-items-center justify-content-center">
+                        <div class="card-header bg-white py-2  d-flex flex-row align-items-center justify-content-center">
                             <!-- <h6 class="m-0 fw-bold text-primary">Rekapitulasi Kehadiran Bulanan</h6> -->
                             <a href="{{ route('reports.monthly', ['bulan' => request('bulan', date('n')), 'tahun' => request('tahun', date('Y'))]) }}" class="btn btn-sm btn-danger  shadow-sm">
-                                <i class="bi bi-file-earmark-pdf  me-1"></i> Download Rekap PDF
+                                <i class="bi bi-file-earmark-pdf  me-1"></i> Rekap Bulanan
                             </a>
                         </div>
                         <div class="card-body">
@@ -165,7 +165,7 @@
                             
                             <hr>
 
-                            <div class="mb-3">
+                            <div class="mb-0">
                                 <div class="d-flex justify-content-between mb-1">
                                     <span class="small fw-bold text-success"><i class="bi bi-circle-fill me-1"></i> Hadir Tepat Waktu</span>
                                     <span class="small fw-bold">{{ hitungPersen($hadir, $total) }}%</span>
@@ -411,10 +411,33 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    onClick: (e) => {
+                        const points = e.chart.getElementsAtEventForMode(e, 'index', { intersect: false }, true);
+
+                        if (points.length > 0) {
+                            const firstPoint = points[0];
+                            const dayIndex = firstPoint.index;
+                            const day = dailyLabels[dayIndex];
+                            
+                            // Ambil Tahun dan Bulan dar variable PHP yang sudah ada di scope blade
+                            const year = "{{ request('tahun', date('Y')) }}";
+                            const month = "{{ request('bulan', date('n')) }}";
+                            
+                            // Pad month and day with leading zero if needed
+                            const paddedMonth = month.toString().padStart(2, '0');
+                            const paddedDay = day.toString().padStart(2, '0');
+                            
+                            const dateStr = `${year}-${paddedMonth}-${paddedDay}`;
+                            const url = `{{ url('/jadwal') }}?tanggal=${dateStr}&search=`;
+                            
+                            window.location.href = url;
+                        }
+                    },
                     scales: {
                         x: {
                             stacked: true, // Mengaktifkan Stacked Bar
-                            grid: { display: false }
+                            grid: { display: false },
+                            cursor: 'pointer' // Add cursor pointer to indicate clickable
                         },
                         y: {
                             stacked: true, // Mengaktifkan Stacked Bar
@@ -430,6 +453,9 @@
                             mode: 'index',
                             intersect: false,
                         }
+                    },
+                    onHover: (event, chartElement) => {
+                        event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
                     }
                 }
             });

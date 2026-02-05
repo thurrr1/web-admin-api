@@ -7,118 +7,24 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <style>
-        body {
-            background-color: #f8f9fc; /* Abu-abu sangat muda agar elemen putih terlihat menonjol */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #444;
-        }
-        .wrapper { display: flex; min-height: 100vh; }
-        
-        /* Sidebar Minimalis */
-        .sidebar {
-            min-width: 200px;
-            max-width: 200px;
-            background: #ffffff;
-            min-height: 100vh;
-            box-shadow: 2px 0 15px rgba(0,0,0,0.03); /* Shadow halus di kanan */
-            z-index: 100;
-            position: relative;
-        }
-        .sidebar .brand {
-            padding: 25px;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #4e73df; /* Aksen warna biru modern */
-            display: flex;
-            align-items: center;
-        }
-        .sidebar a {
-            color: #6c757d;
-            text-decoration: none;
-            padding: 12px 25px;
-            display: flex;
-            align-items: center;
-            font-weight: 500;
-            transition: all 0.2s ease-in-out;
-            margin: 4px 15px;
-            border-radius: 10px; /* Rounded corners */
-        }
-        .sidebar a i {
-            margin-right: 12px;
-            font-size: 1.1rem;
-        }
-        .sidebar a:hover {
-            background: #f8f9fa;
-            color: #4e73df;
-        }
-        .sidebar a.active {
-            background: #eef2ff; /* Biru sangat muda */
-            color: #4e73df;
-            font-weight: 600;
-        }
-        .sidebar .menu-header {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #adb5bd;
-            margin: 25px 25px 10px;
-            font-weight: 700;
-        }
-
-        /* Navbar Minimalis */
-        .navbar {
-            background: #ffffff;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.03); /* Shadow halus di bawah */
-            padding: 15px 30px;
-            border: none;
-        }
-        
-        /* Content Area */
-        .content-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .content {
-            flex: 1;
-            padding: 15px 30px 10px 30px;
-        }
-
-        /* Global Card Styling (Otomatis mengubah semua card di aplikasi) */
-        .card {
-            border: none; /* Hilangkan border */
-            border-radius: 15px; /* Sudut lebih bulat */
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05); /* Drop shadow lembut */
-            background: #ffffff;
-            margin-bottom: 20px;
-        }
-        .card-header {
-            background: transparent;
-            border-bottom: 1px solid #f0f0f0;
-            padding: 20px 25px;
-            font-weight: 600;
-            color: #4e73df;
-        }
-        .card-body {
-            padding: 25px;
-        }
-        
-        /* Tombol */
-        .btn {
-            border-radius: 8px;
-            padding: 8px 16px;
-            box-shadow: none !important;
-        }
-    </style>
+    <!-- Custom CSS -->
+    <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
     @stack('styles')
 </head>
 <body>
     <div class="wrapper">
+        <!-- Overlay for Mobile Sidebar -->
+        <div class="overlay" id="sidebarOverlay"></div>
+
         <!-- Sidebar Kiri -->
-        <div class="sidebar">
-            <div class="brand">
-                <i class="bi bi-fingerprint me-2"></i> Absensi Online 
+        <div class="sidebar" id="sidebar">
+            <div class="brand d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="bi bi-fingerprint me-2"></i> Absensi Online
+                </div>
+                <button class="btn btn-sm btn-link d-md-none text-muted" id="closeSidebar">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
             
             <div class="py-2">
@@ -156,10 +62,13 @@
             <!-- Navbar Atas -->
             <nav class="navbar navbar-expand-lg navbar-light">
                 <div class="container-fluid">
-                    <!-- Tombol Toggle Mobile bisa ditambahkan di sini jika perlu -->
+                    <!-- Tombol Toggle Sidebar (Mobile Only) -->
+                    <button class="btn btn-link text-dark me-3 d-md-none" id="sidebarToggle">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
                     
                     <div class="d-flex align-items-center">
-                        <h5 class="mb-0 fw-bold text-secondary">{{ session('user')['organisasi'] ?? '' }}</h5>
+                        <h5 class="mb-0 fw-bold text-secondary d-none d-sm-block">{{ session('user')['organisasi'] ?? '' }}</h5>
                     </div>
                     
                     <div class="ms-auto d-flex align-items-center">
@@ -168,7 +77,7 @@
                                 <div class="bg-light rounded-circle p-2 me-2">
                                     <i class="bi bi-person text-primary"></i>
                                 </div>
-                                <span class="fw-medium">{{ session('user')['nama'] ?? 'Admin' }}</span>
+                                <span class="fw-medium d-none d-sm-inline">{{ session('user')['nama'] ?? 'Admin' }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end border-0 shadow mt-2">
                                 <li>
@@ -206,6 +115,24 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sidebar Toggle Script
+        document.addEventListener("DOMContentLoaded", function() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('sidebarToggle');
+            const closeBtn = document.getElementById('closeSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('show');
+                overlay.classList.toggle('show');
+            }
+
+            if(toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
+            if(closeBtn) closeBtn.addEventListener('click', toggleSidebar);
+            if(overlay) overlay.addEventListener('click', toggleSidebar);
+        });
+    </script>
     @yield('scripts')
 </body>
 </html>

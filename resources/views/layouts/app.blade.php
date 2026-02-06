@@ -54,6 +54,10 @@
                 <a href="{{ route('banner.index') }}" class="{{ request()->routeIs('banner.*') ? 'active' : '' }}">
                     <i class="bi bi-card-image"></i> Banner Info
                 </a>
+                <div class="menu-header">Developer</div>
+                <a href="{{ url('/api-docs') }}" target="_blank">
+                    <i class="bi bi-code-slash"></i> API Docs
+                </a>
             </div>
         </div>
 

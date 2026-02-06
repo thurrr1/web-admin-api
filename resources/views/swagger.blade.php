@@ -39,7 +39,6 @@
         @if(isset($otherDocsUrl))
             <a href="{{ $otherDocsUrl }}" class="btn">{{ $otherDocsLabel ?? 'Switch API' }}</a>
         @endif
-        <a href="/" class="btn" style="background-color: #444; margin-left: 10px;">Back to Dashboard</a>
     </div>
 </div>
 <div id="swagger-ui"></div>

@@ -158,7 +158,12 @@ class AsnController extends Controller
 
         $asn = $response->json('data');
         $roles = $respRoles->successful() ? $respRoles->json('data') : [];
-        return view('asn.edit', compact('asn', 'roles'));
+        
+        // Helper untuk URL gambar (Asumsi API_BASE_URL = http://.../api)
+        $apiUrl = env('API_BASE_URL', 'http://localhost:3000/api');
+        $storageUrl = str_replace('/api', '', $apiUrl); // Hapus /api untuk dapat root URL
+
+        return view('asn.edit', compact('asn', 'roles', 'storageUrl'));
     }
 
     public function update(Request $request, $id)

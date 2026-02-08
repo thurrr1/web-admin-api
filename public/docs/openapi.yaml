@@ -171,6 +171,24 @@ paths:
         '200':
           description: Pegawai deleted
 
+  /api/public/asn/{id}/foto:
+    get:
+      summary: Get Foto Profile (Public)
+      tags: [Pegawai]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        200:
+          description: File Image
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+
   /api/admin/asn/{id}/reset-password:
     put:
       summary: Reset Password Pegawai (Admin Manual)

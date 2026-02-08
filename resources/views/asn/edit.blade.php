@@ -87,7 +87,7 @@
                     
                     @if(!empty($asn['foto']))
                         <div class="mb-3">
-                            <img src="{{ Str::startsWith($asn['foto'], 'http') ? $asn['foto'] : $storageUrl . '/' . $asn['foto'] }}" alt="Foto Profil" class="img-fluid rounded shadow-sm" style="max-height: 300px; width: auto;">
+                            <img src="{{ env('API_BASE_URL') }}/public/asn/{{ $asn['ID'] ?? $asn['id'] }}/foto" alt="Foto Profil" class="img-fluid rounded shadow-sm" style="max-height: 300px; width: auto;" onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($asn['nama']) }}&size=200'">
                         </div>
                     @else
                         <div class="alert alert-secondary d-flex align-items-center justify-content-center flex-column" style="height: 200px;">

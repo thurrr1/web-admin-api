@@ -48,8 +48,16 @@
                 </a>
 
                 <div class="menu-header">Master Data</div>
+                @php
+                    $permissions = session('user')['permissions'] ?? [];
+                @endphp
+                @if(in_array('kelola_organisasi', $permissions))
+                <a href="{{ route('super-org.index') }}" class="{{ request()->routeIs('super-org.*') ? 'active' : '' }}">
+                    <i class="bi bi-building-gear"></i> Kelola Organisasi
+                </a>
+                @endif
                 <a href="{{ route('organisasi.index') }}" class="{{ request()->routeIs('organisasi.*') ? 'active' : '' }}">
-                    <i class="bi bi-building"></i> Organisasi
+                    <i class="bi bi-building"></i> Profil Organisasi
                 </a>
                 <a href="{{ route('banner.index') }}" class="{{ request()->routeIs('banner.*') ? 'active' : '' }}">
                     <i class="bi bi-card-image"></i> Banner Info
@@ -84,6 +92,14 @@
                                 <span class="fw-medium d-none d-sm-inline">{{ session('user')['nama'] ?? 'Admin' }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end border-0 shadow mt-2">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('profile.password') }}">
+                                        <i class="bi bi-key me-2"></i> Ganti Password
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 <li>
                                     <form action="{{ route('logout') }}" method="POST">
                                         @csrf
@@ -137,6 +153,6 @@
             if(overlay) overlay.addEventListener('click', toggleSidebar);
         });
     </script>
-    @yield('scripts')
+    @stack('scripts')
 </body>
 </html>

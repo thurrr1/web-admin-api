@@ -10,7 +10,9 @@ use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\OrganisasiController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SuperOrgController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\CheckApiToken;
 
 Route::get('/', function () {
@@ -116,6 +118,17 @@ Route::middleware([CheckApiToken::class])->group(function () {
 
     // Manajemen Role & Permission
     Route::resource('role', RoleController::class);
+
+    // Manajemen Organisasi (Super Admin)
+    Route::resource('super-org', SuperOrgController::class)->except(['show', 'destroy']);
+    Route::get('/super-org/{id}/admin/create', [SuperOrgController::class, 'createAdmin'])->name('super-org.create-admin');
+    Route::post('/super-org/{id}/admin', [SuperOrgController::class, 'storeAdmin'])->name('super-org.store-admin');
+    Route::get('/super-org/{id}/admins', [SuperOrgController::class, 'getAdmins'])->name('super-org.admins'); // List Admin AJAX
+    Route::patch('/super-org/admin/{id}/toggle', [SuperOrgController::class, 'toggleAdminStatus'])->name('super-org.toggle-admin'); // Toggle Status
+
+    // Ganti Password
+    Route::get('/profile/password', [ProfileController::class, 'editPassword'])->name('profile.password');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
     // Laporan PDF
     Route::get('/reports/monthly', [ReportController::class, 'monthlyRecap'])->name('reports.monthly');

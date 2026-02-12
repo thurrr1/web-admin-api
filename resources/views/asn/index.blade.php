@@ -12,9 +12,14 @@
                     <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
                 </div>
             </form>
+            @php
+                    $permissions = session('user')['permissions'] ?? [];
+                @endphp
+                @if(in_array('kelola_organisasi', $permissions))
             <a href="{{ route('role.index') }}" class="btn btn-outline-secondary shadow-sm">
                 <i class="bi bi-shield-lock me-1"></i> Role
             </a>
+            @endif
             <a href="{{ route('asn.create') }}" class="btn btn-primary shadow-sm">
                 <i class="bi bi-plus-lg me-1"></i> Tambah
             </a>

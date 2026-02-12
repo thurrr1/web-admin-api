@@ -67,9 +67,11 @@ h6,
 /* Wrapper */
 .wrapper {
     display: flex;
+    height: 100vh;
     min-height: 100vh;
     position: relative;
-    overflow-x: hidden;
+    overflow: hidden;
+    /* Prevent body scroll, everything scrolls inside */
 }
 
 /* Sidebar Styles */
@@ -78,7 +80,9 @@ h6,
     /* Reduced from 250px */
     max-width: 230px;
     background: #ffffff;
-    min-height: 100vh;
+    height: 100vh;
+    overflow-y: auto;
+    /* Sidebar itself can scroll */
     box-shadow: 2px 0 15px rgba(0, 0, 0, 0.03);
     z-index: 1040;
     transition: all 0.3s ease-in-out;
@@ -138,12 +142,16 @@ h6,
     display: flex;
     flex-direction: column;
     width: 100%;
+    height: 100vh;
+    overflow: hidden;
     transition: margin-left 0.3s;
 }
 
 .content {
     flex: 1;
     padding: 20px 30px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* Navbar */

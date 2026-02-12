@@ -159,7 +159,7 @@
                                 </div>
                                 <div class="ms-4 text-center">
                                     <div class="display-4 fw-bold text-dark">{{ $stats['bulan_ini']['total_jadwal'] ?? 0 }}</div>
-                                    <div class="text-muted small text-uppercase ls-1">Total Jadwal</div>
+                                    <div class="text-muted small ls-1">Total Jadwal</div>
                                 </div>
                             </div>
                             

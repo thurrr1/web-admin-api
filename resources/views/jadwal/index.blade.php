@@ -99,7 +99,7 @@
                                             $badgeClass = 'bg-success';
                                         } elseif ($status == 'IZIN' || $status == 'CUTI') {
                                             $badgeClass = 'bg-info text-dark';
-                                        } elseif (strpos($status, 'TERLAMBAT') !== false) {
+                                        } elseif (strpos($status, 'TL/CP') !== false) {
                                             $badgeClass = 'bg-warning text-dark';
                                         } elseif ($status == 'ALPHA') {
                                             $badgeClass = 'bg-danger';

@@ -248,7 +248,7 @@ class JadwalController extends Controller
     public function destroyDate(Request $request)
     {
         $tanggal = $request->tanggal;
-        $response = $this->api->delete("/admin/jadwal/date/bulk", ['tanggal' => $tanggal]);
+        $response = $this->api->delete("/admin/jadwal/date/bulk?tanggal={$tanggal}");
 
         if ($response->successful()) {
             return redirect()->route('jadwal.index', ['tanggal' => $tanggal])->with('success', 'Semua jadwal pada tanggal tersebut berhasil dihapus.');

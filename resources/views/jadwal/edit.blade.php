@@ -26,7 +26,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Ganti Shift</label>
+                    <label class="form-label">Ganti Jam Kerja</label>
                     <select name="shift_id" class="form-select" required>
                         @foreach($shifts as $s)
                             <option value="{{ $s['ID'] ?? $s['id'] }}" {{ ($jadwal['shift_id'] == ($s['ID'] ?? $s['id'])) ? 'selected' : '' }}>

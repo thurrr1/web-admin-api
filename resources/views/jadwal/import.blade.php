@@ -22,7 +22,7 @@
                         <i class="bi bi-info-circle me-1"></i> Pastikan format Excel Anda sesuai:
                         <br>Kolom 1: NIP Pegawai
                         <br>Kolom 2: Nama Pegawai (Opsional/Diabaikan sistem)
-                        <br>Kolom 3: Tanggal (YYYY-MM-DD)
+                        <br>Kolom 3: Tanggal (DD/MM/YYYY)
                         <br>Kolom 4: Jam Masuk (HH:mm)
                         <br>Kolom 5: Jam Pulang (HH:mm)
                         <br>Kolom 6: Status (1 = Masuk, 2 = Libur/Nonaktif)

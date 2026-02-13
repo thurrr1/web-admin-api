@@ -113,10 +113,11 @@ class SuperOrgController extends Controller
     {
         $request->validate([
             'nama' => 'required|string',
-            'nip' => 'required|numeric|unique:asns,nip', // Note: unique check here might not work if DB is different, better rely on API error
+            'nip' => 'required|numeric',
             'password' => 'required|min:6',
             'jabatan' => 'required|string',
             'bidang' => 'required|string',
+            'role_id' => 'required|integer',
         ]);
         
         $data = [
@@ -125,7 +126,7 @@ class SuperOrgController extends Controller
             'password' => $request->password,
             'jabatan' => $request->jabatan,
             'bidang' => $request->bidang,
-            'role_id' => 1, 
+            'role_id' => (int)$request->role_id, 
             'email' => $request->email,
             'no_hp' => $request->no_hp,
             'organisasi_id' => (int)$id, // This is key!
@@ -144,6 +145,61 @@ class SuperOrgController extends Controller
     {
         $response = $this->api->get("/admin/organisasi/{$id}/admins");
         return $response->json();
+    }
+
+    public function editAdmin($id)
+    {
+        // Ambil detail ASN dari API
+        $response = $this->api->get("/admin/asn/{$id}");
+        // Ambil Roles
+        $respRoles = $this->api->get('/admin/roles');
+
+        if (!$response->successful()) {
+            return redirect()->route('super-org.index')->with('error', 'Data admin tidak ditemukan');
+        }
+
+        $asn = $response->json('data');
+        $roles = $respRoles->successful() ? $respRoles->json('data') : [];
+
+        return view('super-org.edit_admin', compact('asn', 'roles'));
+    }
+
+    public function updateAdmin(Request $request, $id)
+    {
+        $request->validate([
+            'nama' => 'required',
+            'jabatan' => 'required',
+            'bidang' => 'required',
+            'role_id' => 'required|integer',
+            'email'   => 'nullable|email',
+            'no_hp'   => 'nullable|string',
+        ]);
+
+        $data = $request->all();
+        $data['role_id'] = (int) $request->role_id;
+        // Kita tidak update is_active dari sini (biarkan value lama atau handle terpisah)
+        // Namun API update ASN mungkin butuh is_active jika sifatnya replace all fields.
+        // Cek AsnController: metodeny PUT /admin/asn/{id}. 
+        // Best practice: fetch existing data, merge, then update OR API supports patch.
+        // Utk aman: kita ambil data existing dulu utk dapat is_active nya?
+        // Atau kita bisa kirim is_active yang sudah ada di DB jika API mewajibkan.
+        // Tapi lihat AsnController::update, dia kirim semua.
+        // Mari kita fetch dulu utk ambil is_active existing.
+        
+        $current = $this->api->get("/admin/asn/{$id}");
+        if ($current->successful()) {
+            $currData = $current->json('data');
+            $data['is_active'] = $currData['is_active']; // Pertahankan status lama
+            $data['organisasi_id'] = $currData['OrganisasiID'] ?? $currData['organisasi_id']; // Pertahankan org id
+        }
+
+        $response = $this->api->put("/admin/asn/{$id}", $data);
+
+        if ($response->successful()) {
+            return redirect()->route('super-org.index')->with('success', 'Data admin berhasil diperbarui');
+        }
+
+        return back()->withErrors($response->json('error') ?? 'Gagal update admin')->withInput();
     }
 
     public function toggleAdminStatus($id)

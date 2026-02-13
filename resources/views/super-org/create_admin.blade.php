@@ -57,8 +57,10 @@
                     </div>
                 </div>
 
-                <div class="alert alert-info small">
-                    <i class="bi bi-info-circle me-1"></i> Akun ini akan otomatis memiliki Role <strong>Admin</strong> untuk organisasi ini.
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Role ID <span class="text-danger">*</span></label>
+                    <input type="number" name="role_id" class="form-control" value="{{ old('role_id', 1) }}" required>
+                    <small class="text-muted">Masukkan ID Role untuk akun ini (Default: 1 - Admin).</small>
                 </div>
 
                 <div class="d-flex justify-content-end mt-4">

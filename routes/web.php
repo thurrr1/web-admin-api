@@ -124,6 +124,8 @@ Route::middleware([CheckApiToken::class])->group(function () {
     Route::get('/super-org/{id}/admin/create', [SuperOrgController::class, 'createAdmin'])->name('super-org.create-admin');
     Route::post('/super-org/{id}/admin', [SuperOrgController::class, 'storeAdmin'])->name('super-org.store-admin');
     Route::get('/super-org/{id}/admins', [SuperOrgController::class, 'getAdmins'])->name('super-org.admins'); // List Admin AJAX
+    Route::get('/super-org/admin/{id}/edit', [SuperOrgController::class, 'editAdmin'])->name('super-org.edit-admin');
+    Route::put('/super-org/admin/{id}', [SuperOrgController::class, 'updateAdmin'])->name('super-org.update-admin');
     Route::patch('/super-org/admin/{id}/toggle', [SuperOrgController::class, 'toggleAdminStatus'])->name('super-org.toggle-admin'); // Toggle Status
 
     // Ganti Password

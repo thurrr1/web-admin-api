@@ -19,7 +19,7 @@
                             <th class="ps-4 py-3" style="width: 5%;">ID</th>
                             <th class="py-3" style="width: 35%;">Nama Organisasi</th>
                             <th class="py-3" style="width: 30%;">Email Admin</th>
-                            <th class="text-end pe-4 py-3" style="width: 30%;">Aksi</th>
+                            <th class="text-end pe-4 py-3" style="width: 30%;"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -93,10 +93,11 @@
                         <table class="table table-sm mb-0 table-borderless" style="table-layout: fixed;">
                             <thead class="text-secondary" style="font-size: 0.9rem;">
                                 <tr>
-                                    <th class="border-top-0" style="width: 25%">NIP</th>
-                                    <th class="border-top-0" style="width: 35%">Nama</th>
-                                    <th class="border-top-0" style="width: 25%">Jabatan</th>
+                                    <th class="border-top-0" style="width: 20%">NIP</th>
+                                    <th class="border-top-0" style="width: 20%">Nama</th>
+                                    <th class="border-top-0" style="width: 30%">Email</th>
                                     <th class="border-top-0" style="width: 15%">Status</th>
+                                    <th class="border-top-0" style="width: 5%">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="border-top-0">
@@ -107,12 +108,13 @@
                     const isChecked = admin.is_active ? 'checked' : '';
                     const statusLabel = admin.is_active ? 'Aktif' : 'Nonaktif';
                     const statusClass = admin.is_active ? 'text-success' : 'text-muted';
+                    const editUrl = `/super-org/admin/${adminId}/edit`;
                     
                     html += `
                         <tr>
                             <td class="text-muted">${admin.nip}</td>
                             <td class="text-muted">${admin.nama}</td>
-                            <td class="text-muted">${admin.jabatan}</td>
+                            <td class="text-muted">${admin.email}</td>
                             <td>
                                 <div class="form-check form-switch" style="transform: scale(0.8); transform-origin: left center;">
                                     <input class="form-check-input" type="checkbox" role="switch" 
@@ -122,6 +124,11 @@
                                         ${statusLabel}
                                     </label>
                                 </div>
+                            </td>
+                            <td>
+                                <a href="${editUrl}" class="btn btn-sm btn-outline-primary shadow-sm" title="Edit Data Admin" style="transform: scale(0.8); transform-origin: left center;">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
                             </td>
                         </tr>
                     `;

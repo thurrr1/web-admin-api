@@ -21,7 +21,7 @@
                 <div class="mb-3">
                     <label class="form-label">File Gambar</label>
                     <input type="file" name="foto" class="form-control" accept="image/*" required>
-                    <div class="form-text">Format: JPG, PNG. Maksimal 2MB.</div>
+                    <div class="form-text">Format: JPG, PNG. Maksimal 10MB.</div>
                 </div>
 
                 <div class="mt-4">

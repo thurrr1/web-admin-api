@@ -117,20 +117,7 @@ class SuperOrgController extends Controller
             'password' => 'required|min:6',
             'jabatan' => 'required|string',
             'bidang' => 'required|string',
-            // 'role_id' hardcoded to Admin (ID 2 usually, or we search for it)
         ]);
-
-        // Find Role ID for "Admin"
-        // Ideally fetch roles from API, but for MVP hardcode or pass standard ID. 
-        // In seeder: 1=Super Admin, 2=Admin, 3=Atasan, 4=Pegawai (Based on creation order in seeder)
-        // Wait, seeder order: Super Admin, Admin, Atasan, Pegawai.
-        // Before seeder change: Admin, Atasan, Pegawai.
-        // IDs depend on database state.
-        // Safer to fetch roles from API? currently no role list API for admin.
-        // Let's assume ID 2 is Admin if fresh seed.
-        // Or better: Add a dropdown in UI or backend logic handles role name? Backend expects role_id.
-        // I'll assume 2 for Admin for now, or existing logic uses names?
-        // Let's check AsnController store method to see how it handles roles.
         
         $data = [
             'nama' => $request->nama,
@@ -138,7 +125,7 @@ class SuperOrgController extends Controller
             'password' => $request->password,
             'jabatan' => $request->jabatan,
             'bidang' => $request->bidang,
-            'role_id' => 2, // Asumsi 2 = Admin (Urutan seeder)
+            'role_id' => 1, 
             'email' => $request->email,
             'no_hp' => $request->no_hp,
             'organisasi_id' => (int)$id, // This is key!

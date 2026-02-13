@@ -16,10 +16,10 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light">
                         <tr>
-                            <th class="ps-4 py-3">ID</th>
-                            <th class="py-3">Nama Organisasi</th>
-                            <th class="py-3">Email Admin</th>
-                            <th class="text-end pe-4 py-3">Aksi</th>
+                            <th class="ps-4 py-3" style="width: 5%;">ID</th>
+                            <th class="py-3" style="width: 35%;">Nama Organisasi</th>
+                            <th class="py-3" style="width: 30%;">Email Admin</th>
+                            <th class="text-end pe-4 py-3" style="width: 30%;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>

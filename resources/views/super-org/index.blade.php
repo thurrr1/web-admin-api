@@ -44,10 +44,10 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr id="admins-row-{{ $org['ID'] }}" class="d-none bg-light">
-                                <td colspan="4" class="p-3">
-                                    <div id="admins-container-{{ $org['ID'] }}" class="p-2 border rounded bg-white">
-                                        <div class="text-center text-muted py-2">Memuat data admin...</div>
+                            <tr id="admins-row-{{ $org['ID'] }}" class="d-none">
+                                <td colspan="4" class="p-0 border-0">
+                                    <div id="admins-container-{{ $org['ID'] }}" class="bg-light border-bottom">
+                                        <div class="text-center text-muted py-3">Memuat data admin...</div>
                                     </div>
                                 </td>
                             </tr>
@@ -89,42 +89,45 @@
                 }
                 
                 let html = `
-                    <table class="table table-sm table-bordered mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>NIP</th>
-                                <th>Nama</th>
-                                <th>Jabatan</th>
-                                <th>Status</th>
-                                <th class="text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div class="ms-auto" style="width: 95%;">
+                        <table class="table table-sm mb-0 table-borderless" style="table-layout: fixed;">
+                            <thead class="text-secondary" style="font-size: 0.9rem;">
+                                <tr>
+                                    <th class="border-top-0" style="width: 25%">NIP</th>
+                                    <th class="border-top-0" style="width: 35%">Nama</th>
+                                    <th class="border-top-0" style="width: 25%">Jabatan</th>
+                                    <th class="border-top-0" style="width: 15%">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="border-top-0">
                 `;
                 
                 data.data.forEach(admin => {
+                    const adminId = admin.ID || admin.id; // Handle casing ID
                     const isChecked = admin.is_active ? 'checked' : '';
+                    const statusLabel = admin.is_active ? 'Aktif' : 'Nonaktif';
+                    const statusClass = admin.is_active ? 'text-success' : 'text-muted';
+                    
                     html += `
                         <tr>
-                            <td>${admin.nip}</td>
-                            <td>${admin.nama}</td>
-                            <td>${admin.jabatan}</td>
+                            <td class="text-muted">${admin.nip}</td>
+                            <td class="text-muted">${admin.nama}</td>
+                            <td class="text-muted">${admin.jabatan}</td>
                             <td>
-                                <span class="badge ${admin.is_active ? 'bg-success' : 'bg-danger'}">
-                                    ${admin.is_active ? 'Aktif' : 'Nonaktif'}
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <div class="form-check form-switch d-inline-block">
+                                <div class="form-check form-switch" style="transform: scale(0.8); transform-origin: left center;">
                                     <input class="form-check-input" type="checkbox" role="switch" 
-                                        ${isChecked} onchange="toggleStatus(${admin.ID}, this, ${orgId})">
+                                        id="status-switch-${adminId}"
+                                        ${isChecked} onchange="toggleStatus(${adminId}, this, ${orgId})">
+                                    <label class="form-check-label ${statusClass} fw-bold" for="status-switch-${adminId}" style="font-size: 1.1rem;">
+                                        ${statusLabel}
+                                    </label>
                                 </div>
                             </td>
                         </tr>
                     `;
                 });
                 
-                html += '</tbody></table>';
+                html += '</tbody></table></div>';
                 container.innerHTML = html;
             })
             .catch(error => {
@@ -134,33 +137,74 @@
     }
 
     function toggleStatus(adminId, checkbox, orgId) {
+        if (!adminId) {
+            console.error('Invalid Admin ID');
+            alert('Terjadi kesalahan sistem: ID Admin tidak valid.');
+            checkbox.checked = !checkbox.checked;
+            return;
+        }
+
         const isActive = checkbox.checked;
         const originalState = !isActive;
         
         // Disable checkbox while processing
         checkbox.disabled = true;
         
-        fetch(`/super-org/admin/${adminId}/toggle`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ is_active: isActive })
-        })
-        .then(response => response.json())
-        .then(data => {
+        // Optimistic UI update
+        const label = document.querySelector(`label[for="status-switch-${adminId}"]`);
+        if(label) {
+             label.textContent = isActive ? 'Aktif' : 'Nonaktif';
+             label.className = `form-check-label fw-bold ${isActive ? 'text-success' : 'text-muted'}`;
+        }
+
+        try {
+            const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfTokenMeta) {
+                throw new Error('CSRF Token meta tag not found');
+            }
+            const csrfToken = csrfTokenMeta.getAttribute('content');
+
+            fetch(`/super-org/admin/${adminId}/toggle`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({ is_active: isActive })
+            })
+            .then(async response => {
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server responded with ${response.status}: ${errorText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                checkbox.disabled = false;
+                console.log('Status updated successfully');
+            })
+            .catch(error => {
+                console.error('Error in toggleStatus:', error);
+                // Revert UI
+                checkbox.checked = originalState; 
+                checkbox.disabled = false;
+                if(label) {
+                    label.textContent = originalState ? 'Aktif' : 'Nonaktif';
+                    label.className = `form-check-label fw-bold ${originalState ? 'text-success' : 'text-muted'}`;
+                }
+                alert('Gagal mengubah status admin: ' + (error.message || 'Terjadi kesalahan server'));
+            });
+        } catch (e) {
+            console.error('Synchronous Error:', e);
+            // Revert UI if sync error
+            checkbox.checked = originalState;
             checkbox.disabled = false;
-            // Reload list to update badge status text
-             const container = document.getElementById(`admins-container-${orgId}`);
-             fetchAdmins(orgId, container);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            checkbox.checked = originalState; // Revert
-            checkbox.disabled = false;
-            alert('Gagal mengubah status admin.');
-        });
+             if(label) {
+                label.textContent = originalState ? 'Aktif' : 'Nonaktif';
+                label.className = `form-check-label fw-bold ${originalState ? 'text-success' : 'text-muted'}`;
+            }
+            alert('Gagal memproses permintaan: ' + e.message);
+        }
     }
 </script>
 @endpush

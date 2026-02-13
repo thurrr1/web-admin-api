@@ -38,6 +38,11 @@ class ApiService
         return $this->request('delete', $endpoint, $data, $timeout);
     }
 
+    public function patch($endpoint, $data = [], $timeout = 60)
+    {
+        return $this->request('patch', $endpoint, $data, $timeout);
+    }
+
     /**
      * Wrapper request dengan Auto Refresh Token
      */
